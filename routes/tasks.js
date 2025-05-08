@@ -11,8 +11,11 @@ router.post("/tasks", async (req, res) => {
     if (!title) {
       return res.status(400).json({error: "Please include a title"});
     }
+
+    // create task
     const task = await Task.create({title});
     res.json(task);
+
   } catch (error) {
     console.error("Error creating task:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -23,6 +26,7 @@ router.post("/tasks", async (req, res) => {
 router.patch("/tasks/:id/complete", async (req, res) => {
   try {
     const taskId = req.params.id;
+    
     // check if task exists
     const task = await Task.findByPk(taskId);
     if (!task) {
@@ -45,6 +49,7 @@ router.put("/tasks/:id", async (req, res) => {
   try {
     const taskId = req.params.id;
     const title = req.body.title;
+    
     // check if task exists
     const task = await Task.findByPk(taskId);
     if (!task) {
@@ -66,6 +71,7 @@ router.put("/tasks/:id", async (req, res) => {
 router.delete("/tasks/:id", async (req, res) => {
   try {
     const taskId = req.params.id;
+    
     // check if task exists
     const task = await Task.findByPk(taskId);
     if (!task) {
@@ -75,6 +81,7 @@ router.delete("/tasks/:id", async (req, res) => {
     // delete task
     await task.destroy();
     res.json({message: "Task deleted"});
+
   } catch (error) {
     console.error("Error deleting tasks:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -84,8 +91,10 @@ router.delete("/tasks/:id", async (req, res) => {
 // Get all tasks - list all tasks
 router.get("/tasks", async (req, res) => {
   try {
+    // display all tasks
     const tasks = await Task.findAll();
     res.json(tasks);
+
   } catch (error) {
     console.error("Error fetching tasks:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -95,8 +104,10 @@ router.get("/tasks", async (req, res) => {
 // List all completed tasks
 router.get("/tasks/completed", async (req, res) => {
   try {
+    // display all tasks where completed = true
     const tasks = await Task.findAll({where: {completed: true}});
     res.json(tasks);
+    
   } catch (error) {
     console.error("Error fetching tasks:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -106,8 +117,10 @@ router.get("/tasks/completed", async (req, res) => {
 // List all pending tasks
 router.get("/tasks/pending", async (req, res) => {
   try {
+    // display all tasks where completed = false
     const tasks = await Task.findAll({where: {completed: false}});
     res.json(tasks);
+
   } catch (error) {
     console.error("Error fetching tasks:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -118,13 +131,16 @@ router.get("/tasks/pending", async (req, res) => {
 router.get("/tasks/:id", async (req, res) => {
   try {
     const taskId = req.params.id;
+
     // check if task exists
     const task = await Task.findByPk(taskId);
     if (!task) {
       return res.status(404).json({error: "Task not found"});
     }
 
+    // display task
     res.json(task);
+    
   } catch (error) {
     console.error("Error fetching task:", error);
     res.status(500).json({ error: "Internal server error" });
