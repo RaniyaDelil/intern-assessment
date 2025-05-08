@@ -9,7 +9,7 @@ router.post("/tasks", async (req, res) => {
 
     // check if title included
     if (!title) {
-      return res.json({error: "Please include a title"});
+      return res.status(404).json({error: "Please include a title"});
     }
     const task = await Task.create({title});
     res.json(task);
@@ -25,7 +25,7 @@ router.get("/tasks/:id", async (req, res) => {
     // check if task exists
     const task = await Task.findByPk(taskId);
     if (!task) {
-      return res.json({error: "Task not found"});
+      return res.status(404).json({error: "Task not found"});
     }
 
     res.json(task);
@@ -35,8 +35,45 @@ router.get("/tasks/:id", async (req, res) => {
 });
 
 // Mark task as complete
+router.patch("/tasks/:id/complete", async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    // check if task exists
+    const task = await Task.findByPk(taskId);
+    if (!task) {
+      return res.status(404).json({error: "Task not found"});
+    }
+
+    // update completed
+    task.completed = true;
+    await task.save();
+    res.json(task);
+    
+  } catch (error) {
+    console.error("Error creating task:", error);
+  }
+});
 
 // Update title of task
+router.put("/tasks/:id", async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    const title = req.body.title;
+    // check if task exists
+    const task = await Task.findByPk(taskId);
+    if (!task) {
+      return res.status(404).json({error: "Task not found"});
+    }
+
+    // update title
+    task.title = title;
+    await task.save();
+    res.json(task);
+
+  } catch (error) {
+    console.error("Error creating task:", error);
+  }
+});
 
 // Delete a task
 router.delete("/tasks/:id", async (req, res) => {
@@ -45,7 +82,7 @@ router.delete("/tasks/:id", async (req, res) => {
     // check if task exists
     const task = await Task.findByPk(taskId);
     if (!task) {
-      return res.json({message: "Task not found"});
+      return res.status(404).json({message: "Task not found"});
     }
 
     // delete task
